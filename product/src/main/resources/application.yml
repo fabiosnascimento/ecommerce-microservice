@@ -6,15 +6,17 @@ spring:
     name: product-service
   datasource:
 #    url: jdbc:postgresql://localhost:5432/product
-    url: jdbc:postgresql://ep-gentle-tooth-b683qw3u-pooler.c-2.sa-east-1.aws.neon.tech/product?sslmode=require&channel_binding=require
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:mysql://localhost:3307/mysql
+    username: mysql
+    password: mysql
   jpa:
-    database: POSTGRESQL
     show-sql: true
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        format_sql: true
 #  h2:
 #    console:
 #      enabled: true
