@@ -5,9 +5,10 @@ spring:
   application:
     name: product-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/product
-    username: postgres
-    password: postgres
+#    url: jdbc:postgresql://localhost:5432/product
+    url: jdbc:postgresql://ep-gentle-tooth-b683qw3u-pooler.c-2.sa-east-1.aws.neon.tech/product?sslmode=require&channel_binding=require
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
   jpa:
     database: POSTGRESQL
     show-sql: true
