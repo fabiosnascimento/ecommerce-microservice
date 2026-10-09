@@ -5,7 +5,7 @@ spring:
   application:
     name: user-service
   mongodb:
-    uri: mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@user-data.gzyuigl.mongodb.net/?appName=user-data
+    uri: mongodb://localhost:27017/userdb
     database: userdb
 
 #  datasource:
