@@ -1,6 +1,10 @@
 package br.com.fabionascimento.order.service;
 
+import br.com.fabionascimento.order.clients.ProductServiceClient;
+import br.com.fabionascimento.order.clients.UserServiceClient;
 import br.com.fabionascimento.order.dto.CartItemRequest;
+import br.com.fabionascimento.order.dto.ProductResponse;
+import br.com.fabionascimento.order.dto.UserResponse;
 import br.com.fabionascimento.order.model.CartItem;
 import br.com.fabionascimento.order.repository.CartItemRepository;
 import jakarta.transaction.Transactional;
@@ -8,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -15,31 +20,26 @@ import java.util.List;
 @Transactional
 public class CartService {
     private final CartItemRepository cartItemRepository;
+    private final ProductServiceClient productServiceClient;
+    private final UserServiceClient userServiceClient;
 
     public boolean addToCart(String userId, CartItemRequest request) {
         // Look for product
-//        Optional<Product> productOpt = productRepository.findById(request.getProductId());
-//        if (productOpt.isEmpty()) {
-//            return false;
-//        }
-//
-//        Product product = productOpt.get();
-//        if (product.getStockQuantity() < request.getQuantity()) {
-//            return false;
-//        }
-//
-//        Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
-//        if (userOpt.isEmpty()) {
-//            return false;
-//        }
-//
-//        User user = userOpt.get();
+        ProductResponse productResponse = productServiceClient.getProductDetails(request.getProductId());
+        if (productResponse == null || productResponse.getStockQuantity() < request.getQuantity()) {
+            return false;
+        }
 
-        CartItem existingCartItem = cartItemRepository.findByUserIdAndProductId(userId, request.getProductId());
+        UserResponse userResponse = userServiceClient.getUserDetail(userId);
+        if (userResponse == null) {
+            return false;
+        }
+
+        CartItem existingCartItem = cartItemRepository.findByUserIdAndProductId(userResponse.getId(), productResponse.getId());
         if (existingCartItem != null) {
             // Update the quantity
             existingCartItem.setQuantity(existingCartItem.getQuantity() + request.getQuantity());
-            existingCartItem.setPrice(BigDecimal.valueOf(1000.00));
+            existingCartItem.setPrice(productResponse.getPrice());
             cartItemRepository.save(existingCartItem);
         } else {
             // Create a new cart item
@@ -47,7 +47,7 @@ public class CartService {
             cartItem.setUserId(userId);
             cartItem.setProductId(request.getProductId());
             cartItem.setQuantity(request.getQuantity());
-            cartItem.setPrice(BigDecimal.valueOf(1000.00));
+            cartItem.setPrice(productResponse.getPrice());
             cartItemRepository.save(cartItem);
         }
         return true;
