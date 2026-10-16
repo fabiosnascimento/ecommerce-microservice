@@ -27,6 +27,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.gettAllProducts());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,
                                                          @RequestBody ProductRequest productRequest) {
@@ -41,8 +48,8 @@ public class ProductController {
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<List<ProductResponse>> searchProduct(@RequestParam String keyword) {
-        return ResponseEntity.ok(productService.searchProducts(keyword));
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<List<ProductResponse>> searchProduct(@RequestParam String keyword) {
+//        return ResponseEntity.ok(productService.searchProducts(keyword));
+//    }
 }

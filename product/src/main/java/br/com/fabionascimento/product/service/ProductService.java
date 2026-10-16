@@ -75,4 +75,9 @@ public class ProductService {
         product.setCategory(productRequest.getCategory());
         product.setStockQuantity(productRequest.getStockQuantity());
     }
+
+    public Optional<ProductResponse> getProductById(String id) {
+        return productRepository.findByIdAndActiveTrue(Long.valueOf(id))
+                .map(this::mapToProductResponse);
+    }
 }
