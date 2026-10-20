@@ -7,6 +7,7 @@ import br.com.fabionascimento.order.dto.ProductResponse;
 import br.com.fabionascimento.order.dto.UserResponse;
 import br.com.fabionascimento.order.model.CartItem;
 import br.com.fabionascimento.order.repository.CartItemRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class CartService {
     private final ProductServiceClient productServiceClient;
     private final UserServiceClient userServiceClient;
 
+    @CircuitBreaker(name = "productService")
     public boolean addToCart(String userId, CartItemRequest request) {
         // Look for product
         ProductResponse productResponse = productServiceClient.getProductDetails(request.getProductId());

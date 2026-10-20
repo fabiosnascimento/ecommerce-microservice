@@ -36,3 +36,7 @@ logging:
     rollingpolicy:
       max-file-size: 5MB
       max-history: 7
+
+eureka:
+  instance:
+    prefer-ip-address: true
