@@ -1,0 +1,2 @@
+# Local MinIO volume (Loki chunks and indexes). Runtime data, not source code.
+.data/

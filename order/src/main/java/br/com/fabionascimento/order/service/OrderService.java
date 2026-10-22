@@ -1,5 +1,6 @@
 package br.com.fabionascimento.order.service;
 
+import br.com.fabionascimento.order.dto.OrderCreatedEvent;
 import br.com.fabionascimento.order.dto.OrderItemDTO;
 import br.com.fabionascimento.order.dto.OrderResponse;
 import br.com.fabionascimento.order.model.*;
@@ -9,10 +10,13 @@ import br.com.fabionascimento.order.model.Order;
 import br.com.fabionascimento.order.model.OrderItem;
 import br.com.fabionascimento.order.model.OrderStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,6 +24,13 @@ import java.util.Optional;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
 
     public Optional<OrderResponse> createOrder(String userId) {
         // Validate for cart items
@@ -60,7 +71,29 @@ public class OrderService {
         // Clear the cart
         cartService.clearCart(userId);
 
+        // Publish order created event
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                savedOrder.getStatus(),
+                mapToOrderItemDTOs(savedOrder.getItems()),
+                savedOrder.getTotalAmount(),
+                savedOrder.getCreatedAt()
+        );
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, event);
+
         return Optional.of(mapToOrderResponse(savedOrder));
+    }
+
+    private List<OrderItemDTO> mapToOrderItemDTOs(List<OrderItem> items) {
+        return items.stream()
+                .map(item -> new OrderItemDTO(
+                        item.getId(),
+                        item.getProductId(),
+                        item.getQuantity(),
+                        item.getPrice(),
+                        item.getPrice().multiply(new BigDecimal(item.getQuantity()))
+                )).toList();
     }
 
     private OrderResponse mapToOrderResponse(Order order) {
