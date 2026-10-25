@@ -1,22 +1,31 @@
 package br.com.fabionascimento.notification;
 
 import br.com.fabionascimento.notification.payload.OrderCreatedEvent;
-import br.com.fabionascimento.notification.payload.OrderStatus;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.function.Consumer;
 
 @Service
+@Slf4j
 public class OrderEventConsumer {
-    @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void handleOrderEvent(OrderCreatedEvent orderEvent) {
-        System.out.println("Received Order Event: " + orderEvent);
+//    @RabbitListener(queues = "${rabbitmq.queue.name}")
+//    public void handleOrderEvent(OrderCreatedEvent orderEvent) {
+//        System.out.println("Received Order Event: " + orderEvent);
+//
+//        long orderId = orderEvent.getOrderId();
+//        OrderStatus orderStatus = orderEvent.getOrderStatus();
+//
+//        System.out.println("Order ID: " + orderId);
+//        System.out.println("Order Status: " + orderStatus);
+//    }
 
-        long orderId = orderEvent.getOrderId();
-        OrderStatus orderStatus = orderEvent.getOrderStatus();
-
-        System.out.println("Order ID: " + orderId);
-        System.out.println("Order Status: " + orderStatus);
+    @Bean
+    public Consumer<OrderCreatedEvent> orderCreated() {
+        return event -> {
+            log.info("Received order created event for order: {}", event.getOrderId());
+            log.info("Received order created event for user id: {}", event.getUserId());
+        };
     }
 }
