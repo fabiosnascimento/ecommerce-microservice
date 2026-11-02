@@ -33,3 +33,13 @@ logging:
 eureka:
   instance:
     prefer-ip-address: true
+
+# KEYCLOAK
+keycloak:
+  admin:
+    username: ${KEYCLOAK_USERNAME}
+    password: ${KEYCLOAK_PASSWORD}
+    server-url: ${KEYCLOAK_SERVER_URL}
+    realm: ${KEYCLOAK_REALM}
+    client-id: ${KEYCLOAK_CLIENT_ID}
+    client-uuid: ${KEYCLOAK_CLIENT_UUID}
