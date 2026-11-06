@@ -1,0 +1,50 @@
+server:
+  port: 8082
+
+spring:
+  mongodb:
+    uri: ${MONGO_URL}
+    database: userdb
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: ${RABBITMQ_VHOST:guest}
+    connection-timeout: 30000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+# KEYCLOAK
+keycloak:
+  admin:
+    username: ${KEYCLOAK_USERNAME}
+    password: ${KEYCLOAK_PASSWORD}
+    server-url: ${KEYCLOAK_SERVER_URL}
+    realm: ${KEYCLOAK_REALM}
+    client-id: ${KEYCLOAK_CLIENT_ID}
+    client-uuid: ${KEYCLOAK_CLIENT_UUID}

@@ -1,2 +1,5 @@
 # Application log files. Runtime output, not source code.
 logs/
+
+# Local Docker environment variables.
+deploy/docker/.env
